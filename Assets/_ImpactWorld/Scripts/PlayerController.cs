@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
-public class PlayerMovement : MonoBehaviour {
+public class PlayerController : MonoBehaviour {
 
-    public static PlayerMovement instance;
+    public static PlayerController instance;
 
     private int currentPriority;
-    private bool isJump;
+    [HideInInspector]
+    public bool isJump;
     public float jumpDistance;
     public float jumpPower;
     public float jumpDuration;
@@ -76,13 +77,14 @@ public class PlayerMovement : MonoBehaviour {
         {
             print("击中物体 tag " + hit.transform.tag);
 
+            // Rotate to the cursor direction
+            transform.DOLookAt(new Vector3(hit.point.x, transform.position.y, hit.point.z), 0f);
             if (hit.transform.tag == "Ground")
             {
                 print("击中地面");
 
                 if (movePriority >= currentPriority)
                 {
-                    transform.DOLookAt(new Vector3(hit.point.x, transform.position.y, hit.point.z), 0.3f);
                     transform.DOMove(new Vector3(hit.point.x, transform.position.y, hit.point.z), moveDuration);
                 }                
             }
@@ -93,6 +95,10 @@ public class PlayerMovement : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Detect the player collision in the environment
+    /// </summary>
+    /// <param name="col"></param>
     void OnCollisionEnter(Collision col)
     {
         print("发生碰撞");
