@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour {
     public float jumpPower;
     public float jumpDuration;
     public float moveDuration;
+    public float moveSpeed;
     public float rotationSpeed;
 
 
@@ -27,17 +28,11 @@ public class PlayerController : MonoBehaviour {
 
     void Update()
     {
+        MoveByArrow();
+
         if (!DOTween.IsTweening(transform))
         {
             currentPriority = 0;
-        }
-
-        MoveByArrow();
-
-        // Only change the player's direction
-        if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
-        {
-            HorizontalMove();
         }
 
         if (Input.GetKeyDown(KeyCode.Space))
@@ -52,7 +47,12 @@ public class PlayerController : MonoBehaviour {
     /// </summary>
     private void MoveByArrow()
     {
-
+        // Up and Down change the player move speed
+        float verticalMove = Input.GetAxis("Vertical") * moveSpeed * Time.deltaTime;
+        transform.Translate(0, 0, verticalMove);
+        // Left and Right chang the rotation
+        float playerRotation = Input.GetAxis("Horizontal") * rotationSpeed * Time.deltaTime;
+        transform.Rotate(0, playerRotation, 0);
     }
 
     /// <summary>
@@ -77,7 +77,7 @@ public class PlayerController : MonoBehaviour {
     }
 
     /// <summary>
-    /// Move along the XZ plane
+    /// Move along the XZ plane (dismiss)
     /// </summary>
     private void HorizontalMove()
     {
@@ -97,8 +97,7 @@ public class PlayerController : MonoBehaviour {
 
                 if (movePriority >= currentPriority)
                 {
-                    // Dont move by cursor
-                    //transform.DOMove(new Vector3(hit.point.x, transform.position.y, hit.point.z), moveDuration);
+                    transform.DOMove(new Vector3(hit.point.x, transform.position.y, hit.point.z), moveDuration);
                 }                
             }
             else
