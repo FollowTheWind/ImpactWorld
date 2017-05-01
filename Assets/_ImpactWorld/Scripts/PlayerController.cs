@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour {
     public float jumpPower;
     public float jumpDuration;
     public float moveDuration;
+    public float rotationSpeed;
 
 
     void Awake()
@@ -31,6 +32,9 @@ public class PlayerController : MonoBehaviour {
             currentPriority = 0;
         }
 
+        MoveByArrow();
+
+        // Only change the player's direction
         if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
         {
             HorizontalMove();
@@ -40,6 +44,14 @@ public class PlayerController : MonoBehaviour {
         {
             PlayerJump();
         }
+
+    }
+
+    /// <summary>
+    /// Directional movement and rotation
+    /// </summary>
+    private void MoveByArrow()
+    {
 
     }
 
@@ -85,7 +97,8 @@ public class PlayerController : MonoBehaviour {
 
                 if (movePriority >= currentPriority)
                 {
-                    transform.DOMove(new Vector3(hit.point.x, transform.position.y, hit.point.z), moveDuration);
+                    // Dont move by cursor
+                    //transform.DOMove(new Vector3(hit.point.x, transform.position.y, hit.point.z), moveDuration);
                 }                
             }
             else

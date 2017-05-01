@@ -31,11 +31,41 @@ public class CameraController : MonoBehaviour {
         }
 
         CameraMoveByCursor();
+        ZoomCameraByScrollWheel();
     }
 
     void LateUpdate()
     {
         //transform.position = PlayerController.instance.transform.position - cameraPlayerVector;
+    }
+
+    /// <summary>
+    /// Zoom in or out the camera
+    /// </summary>
+    private void ZoomCameraByScrollWheel()
+    {
+        float min = PlayerController.instance.transform.position.y + 2;
+        float max = min + 10;
+        int directionFlag = Input.GetAxis("Mouse ScrollWheel") > 0 ? 1 : 0;
+        directionFlag = Input.GetAxis("Mouse ScrollWheel") < 0 ? -1 : directionFlag;
+
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        
+
+        Debug.DrawRay(transform.position, Input.mousePosition - transform.position, Color.red, 3f, false);
+
+        if (transform.position.y >= min && transform.position.y <= max)
+        {
+            float zoomDistance = cameraMoveSpeed * directionFlag * Time.deltaTime;
+            transform.Translate(ray.direction * zoomDistance, Space.World);
+        }
+        else
+        {
+            Vector3 pos = transform.position;
+            pos.y = Mathf.Clamp(transform.position.y, min, max);
+            transform.position = pos;
+        }
+
     }
 
     /// <summary>
