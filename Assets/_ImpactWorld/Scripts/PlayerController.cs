@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour {
 
     public static PlayerController instance;
 
+    public float bounceForce;
     private int currentPriority;
     [HideInInspector]
     public bool isJump;
@@ -26,6 +27,11 @@ public class PlayerController : MonoBehaviour {
         isJump = true;
     }
 
+    void Start()
+    {
+        transform.LookAt(new Vector3(0, 1, 0));
+    }
+
     void Update()
     {
         MoveByArrow();
@@ -38,7 +44,7 @@ public class PlayerController : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.Space))
         {
             PlayerJump();
-        }
+        } 
 
     }
 
@@ -66,8 +72,12 @@ public class PlayerController : MonoBehaviour {
             isJump = false;
             currentPriority = jumpPriority;
             transform.DOKill();
+
+            // Judge forward or backward move
+            int verticalDirection = Input.GetAxis("Vertical") < 0 ? -1 : 1;
+
             Vector3 pos = transform.position;
-            pos += transform.forward * jumpDistance;
+            pos += verticalDirection * transform.forward * jumpDistance;
             transform.DOJump(new Vector3(pos.x, transform.position.y, pos.z), jumpPower, 1, jumpDuration)
                 .OnComplete( () => {
                     isJump = true;
@@ -113,11 +123,23 @@ public class PlayerController : MonoBehaviour {
     /// <param name="col"></param>
     void OnCollisionEnter(Collision col)
     {
-        print("发生碰撞");
+        Vector3 collisionVector = (transform.position - col.contacts[0].point).normalized;
         if (!isJump)
         {
             transform.DOKill();
             isJump = true;
+        }
+
+        if (col.gameObject.tag == "Wall")
+        {
+            print("Wall collision...");
+            GetComponent<Rigidbody>().AddForce(collisionVector * bounceForce);
+        }
+
+        if (col.gameObject.tag == "Player")
+        {
+            print("Player collision...");
+            GetComponent<Rigidbody>().AddForce(collisionVector * bounceForce);
         }
     }
 
